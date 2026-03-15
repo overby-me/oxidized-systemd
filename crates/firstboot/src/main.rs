@@ -136,7 +136,7 @@ fn parse_args(args: &[String]) -> Result<Args, String> {
                 process::exit(0);
             }
             "--version" => {
-                println!("systemd-firstboot (systemd-rs)");
+                println!("systemd-firstboot (rust-systemd)");
                 process::exit(0);
             }
             "--root" => {

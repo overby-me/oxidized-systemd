@@ -4746,7 +4746,7 @@ impl DaemonArgs {
                     }
                 }
                 "--version" => {
-                    println!("systemd-udevd (systemd-rs)");
+                    println!("systemd-udevd (rust-systemd)");
                     process::exit(0);
                 }
                 "--help" | "-h" => {

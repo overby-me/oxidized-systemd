@@ -1,7 +1,7 @@
 //! This module provides methods to manage processes with cgroups. Not resource management but reliable tracking of services.
 //! It dynamically decides whether cgroups v1 or v2 should be used.
 //!
-//! The cgroup paths created by `get_own_freezer` return a path that is inside the cgroup that contains systemd-rs itself. With the naming scheme of the freezer
+//! The cgroup paths created by `get_own_freezer` return a path that is inside the cgroup that contains rust-systemd itself. With the naming scheme of the freezer
 //! cgroups we should mostly comply to the guidelines here <https://www.freedesktop.org/wiki/Software/systemd/PaxControlGroups>/
 
 use std::fs;
@@ -39,11 +39,11 @@ fn use_v2(cgroup_path: &std::path::Path) -> bool {
 
 const OWN_CGROUP_NAME: &str = "systemd_rs_self";
 
-/// moves systemd-rs into own cgroup if v2 is used
+/// moves rust-systemd into own cgroup if v2 is used
 ///
 /// This is necessary because cgroupv2 discourages processes in cgroups that are not leafes
 pub fn move_to_own_cgroup(base_path: &std::path::Path) -> Result<(), CgroupError> {
-    trace!("Move systemd-rs to own manager cgroup");
+    trace!("Move rust-systemd to own manager cgroup");
     let proc_content = std::fs::read_to_string("/proc/self/cgroup").unwrap();
     let proc_content_lines = proc_content.split('\n').collect::<Vec<_>>();
     let v2path = get_own_cgroup_v2(&proc_content_lines);
@@ -71,7 +71,7 @@ pub fn move_out_of_own_cgroup(base_path: &std::path::Path) -> Result<(), CgroupE
         let absolute_v2path = base_path.join(v2path);
         let mut parent_group = absolute_v2path.clone();
         parent_group.pop();
-        trace!("Move systemd-rs to parent cgroup: {parent_group:?}");
+        trace!("Move rust-systemd to parent cgroup: {parent_group:?}");
         crate::platform::cgroups::move_self_to_cgroup(&parent_group)?;
 
         let self_cgroup = absolute_v2path.join("systemd_rs_self");
@@ -79,7 +79,7 @@ pub fn move_out_of_own_cgroup(base_path: &std::path::Path) -> Result<(), CgroupE
         std::fs::remove_dir(&self_cgroup)
             .map_err(|e| CgroupError::IOErr(e, format!("{self_cgroup:?}")))?;
 
-        trace!("Remove systemd-rs managed cgroup: {absolute_v2path:?}");
+        trace!("Remove rust-systemd managed cgroup: {absolute_v2path:?}");
         std::fs::remove_dir(&absolute_v2path)
             .map_err(|e| CgroupError::IOErr(e, format!("{absolute_v2path:?}")))?;
     }
@@ -93,7 +93,7 @@ pub fn move_out_of_own_cgroup(base_path: &std::path::Path) -> Result<(), CgroupE
 /// 1. /sys/fs/cgroup/freezer
 /// 1. /sys/fs/cgroup/unified
 ///
-/// The concrete path will be some sub-directory depending on the cgroup systemd-rs has been started in
+/// The concrete path will be some sub-directory depending on the cgroup rust-systemd has been started in
 pub fn get_own_freezer(base_path: &std::path::Path) -> Result<std::path::PathBuf, CgroupError> {
     let proc_content = std::fs::read_to_string("/proc/self/cgroup").unwrap();
     let proc_content_lines = proc_content.split('\n').collect::<Vec<_>>();
@@ -147,7 +147,7 @@ pub fn get_own_cgroup_v2(proc_cgroup_content: &[&str]) -> Option<std::path::Path
 /// If we are in / for freezer find the longest path used in any other cgroup and use that.
 ///
 /// cgroups v1 by convention use the same (or a subset) directory trees under each controller so using the
-/// longest path gives us the most specialized categorization and is probably what others would expect systemd-rs to do?
+/// longest path gives us the most specialized categorization and is probably what others would expect rust-systemd to do?
 fn get_own_cgroup_v1(proc_cgroup_content: &[&str]) -> std::path::PathBuf {
     let mut freezer_path = None;
     let mut longest_path = "/".to_owned();
@@ -178,7 +178,7 @@ fn get_own_cgroup_v1(proc_cgroup_content: &[&str]) -> std::path::PathBuf {
     }
 }
 
-/// move a process into the cgroup. In systemd-rs the child process will call `move_self` for convenience
+/// move a process into the cgroup. In rust-systemd the child process will call `move_self` for convenience
 pub fn move_pid_to_cgroup(
     cgroup_path: &std::path::Path,
     pid: nix::unistd::Pid,
@@ -190,7 +190,7 @@ pub fn move_pid_to_cgroup(
     }
 }
 
-/// move this process into the cgroup. Used by systemd-rs after forking
+/// move this process into the cgroup. Used by rust-systemd after forking
 pub fn move_self_to_cgroup(cgroup_path: &std::path::Path) -> Result<(), CgroupError> {
     if use_v2(cgroup_path) {
         cgroup2::move_self_to_cgroup(cgroup_path)

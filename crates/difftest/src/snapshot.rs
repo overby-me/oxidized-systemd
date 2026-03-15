@@ -3,9 +3,9 @@
 //! Snapshots allow differential tests to record a "golden" reference output and
 //! compare future runs against it. This is especially useful for:
 //!
-//! - Approving intentional divergences between systemd and systemd-rs
+//! - Approving intentional divergences between systemd and rust-systemd
 //! - Tracking expected output for tests where real systemd is not available
-//! - Regression detection when systemd-rs behavior changes
+//! - Regression detection when rust-systemd behavior changes
 //!
 //! # Snapshot storage
 //!
@@ -88,7 +88,7 @@ pub struct SnapshotFile {
     /// Output captured from real systemd.
     pub systemd_output: TestOutput,
 
-    /// Output captured from systemd-rs.
+    /// Output captured from rust-systemd.
     pub systemd_rs_output: TestOutput,
 
     /// The comparison result at the time the snapshot was recorded.
@@ -447,7 +447,7 @@ fn describe_snapshot_changes(
         parts.push("systemd output changed".to_string());
     }
     if snap.systemd_rs_output != *systemd_rs_output {
-        parts.push("systemd-rs output changed".to_string());
+        parts.push("rust-systemd output changed".to_string());
     }
     if snap.result != *result {
         parts.push(format!("result changed from {} to {}", snap.result, result));
@@ -649,7 +649,7 @@ mod tests {
             "my_test",
             "my_category",
             TestOutput::RawText("systemd output".into()),
-            TestOutput::RawText("systemd-rs output".into()),
+            TestOutput::RawText("rust-systemd output".into()),
             DiffResult::Divergent("they differ".into()),
         )
         .with_notes("expected divergence");
@@ -668,7 +668,7 @@ mod tests {
         );
         assert_eq!(
             loaded.systemd_rs_output,
-            TestOutput::RawText("systemd-rs output".into())
+            TestOutput::RawText("rust-systemd output".into())
         );
         assert_eq!(loaded.result, DiffResult::Divergent("they differ".into()));
         assert_eq!(loaded.notes.as_deref(), Some("expected divergence"));
@@ -817,7 +817,7 @@ mod tests {
         match result {
             SnapshotComparison::Changed { changes, .. } => {
                 assert!(changes.contains("systemd output changed"));
-                assert!(changes.contains("systemd-rs output changed"));
+                assert!(changes.contains("rust-systemd output changed"));
             }
             other => panic!("expected Changed, got: {other:?}"),
         }

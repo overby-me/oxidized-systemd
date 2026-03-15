@@ -206,7 +206,7 @@ fn print_help() {
 }
 
 fn print_version() {
-    eprintln!("systemd-networkd (systemd-rs) 0.1.0");
+    eprintln!("systemd-networkd (rust-systemd) 0.1.0");
 }
 
 fn setup_logging() {

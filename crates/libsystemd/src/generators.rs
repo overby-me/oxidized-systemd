@@ -1,4 +1,4 @@
-//! External generator framework for systemd-rs.
+//! External generator framework for rust-systemd.
 //!
 //! Systemd generators are small executables that run early during boot (before
 //! unit files are loaded) and dynamically create unit files, symlinks, and
@@ -6,7 +6,7 @@
 //! generators, executes each one with three output directory arguments, and
 //! then includes the output in the unit search path.
 //!
-//! This module implements the same protocol so that systemd-rs can run
+//! This module implements the same protocol so that rust-systemd can run
 //! third-party generators (e.g. `systemd-gpt-auto-generator`,
 //! `systemd-run-generator`, `zram-generator`, etc.).
 //!
@@ -35,7 +35,7 @@
 //! ## Built-in generators
 //!
 //! `systemd-fstab-generator` and `systemd-getty-generator` are implemented
-//! natively in systemd-rs.  The external versions are skipped to avoid
+//! natively in rust-systemd.  The external versions are skipped to avoid
 //! duplicate/conflicting unit generation.
 
 use log::{debug, info, trace, warn};
@@ -97,7 +97,7 @@ const GENERATOR_LATE_DIR: &str = "/run/systemd/generator.late";
 /// Per-generator execution timeout.
 const GENERATOR_TIMEOUT: Duration = Duration::from_secs(5);
 
-/// Generators that are implemented natively in systemd-rs and should be
+/// Generators that are implemented natively in rust-systemd and should be
 /// skipped when found as external executables.
 const BUILTIN_GENERATORS: &[&str] = &["systemd-fstab-generator", "systemd-getty-generator"];
 
@@ -135,7 +135,7 @@ pub fn run_generators_to(unit_dirs: &[PathBuf], output: GeneratorOutput) -> Gene
 
     // Create fresh output directories
     if let Err(e) = create_output_dirs(&output) {
-        eprintln!("systemd-rs: generators: failed to create output directories: {e}");
+        eprintln!("rust-systemd: generators: failed to create output directories: {e}");
         warn!("generators: failed to create output directories: {e}");
         return output;
     }
@@ -144,13 +144,13 @@ pub fn run_generators_to(unit_dirs: &[PathBuf], output: GeneratorOutput) -> Gene
     let generators = find_generators(unit_dirs);
 
     if generators.is_empty() {
-        eprintln!("systemd-rs: generators: no external generators found");
+        eprintln!("rust-systemd: generators: no external generators found");
         debug!("generators: no external generators found");
         return output;
     }
 
     eprintln!(
-        "systemd-rs: generators: running {} generator(s)...",
+        "rust-systemd: generators: running {} generator(s)...",
         generators.len()
     );
     info!(
@@ -198,7 +198,7 @@ pub fn run_generators_to(unit_dirs: &[PathBuf], output: GeneratorOutput) -> Gene
             Err(GeneratorError::Failed(e)) => {
                 let elapsed = start.elapsed();
                 eprintln!(
-                    "systemd-rs: generators: {name} failed ({:.1}ms): {e}",
+                    "rust-systemd: generators: {name} failed ({:.1}ms): {e}",
                     elapsed.as_secs_f64() * 1000.0
                 );
                 warn!("generators: {name} failed: {e}");
@@ -208,7 +208,7 @@ pub fn run_generators_to(unit_dirs: &[PathBuf], output: GeneratorOutput) -> Gene
     }
 
     eprintln!(
-        "systemd-rs: generators: complete ({succeeded} succeeded, {failed} failed, {skipped} skipped)"
+        "rust-systemd: generators: complete ({succeeded} succeeded, {failed} failed, {skipped} skipped)"
     );
     info!(
         "generators: execution complete ({succeeded} succeeded, {failed} failed, {skipped} skipped/built-in)"

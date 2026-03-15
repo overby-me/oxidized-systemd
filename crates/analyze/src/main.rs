@@ -205,7 +205,7 @@ enum Command {
 
 // ── Boot timing data structures ───────────────────────────────────────────
 
-/// Timing info for a single unit, read from /run/systemd-rs/timing/
+/// Timing info for a single unit, read from /run/rust-systemd/timing/
 #[derive(Debug, Clone)]
 struct UnitTiming {
     name: String,
@@ -588,10 +588,10 @@ fn format_timestamp(t: SystemTime) -> String {
 
 // ── Boot timing data ──────────────────────────────────────────────────────
 
-/// Read boot timing from /run/systemd-rs/boot-timing if available.
+/// Read boot timing from /run/rust-systemd/boot-timing if available.
 fn read_boot_timing() -> BootTiming {
     let mut bt = BootTiming::default();
-    let path = Path::new("/run/systemd-rs/boot-timing");
+    let path = Path::new("/run/rust-systemd/boot-timing");
     if let Ok(content) = fs::read_to_string(path) {
         for line in content.lines() {
             let line = line.trim();
@@ -629,9 +629,9 @@ fn read_boot_timing() -> BootTiming {
     bt
 }
 
-/// Read per-unit timing data from /run/systemd-rs/timing/.
+/// Read per-unit timing data from /run/rust-systemd/timing/.
 fn read_unit_timings() -> Vec<UnitTiming> {
-    let dir = Path::new("/run/systemd-rs/timing");
+    let dir = Path::new("/run/rust-systemd/timing");
     let mut timings = Vec::new();
     if let Ok(entries) = fs::read_dir(dir) {
         for entry in entries.flatten() {
@@ -1035,7 +1035,7 @@ fn cmd_blame() {
     if timings.is_empty() {
         // No timing data; show a message
         println!("No unit timing data available.");
-        println!("(Boot timing data is written to /run/systemd-rs/timing/)");
+        println!("(Boot timing data is written to /run/rust-systemd/timing/)");
         return;
     }
 
@@ -1057,7 +1057,7 @@ fn cmd_critical_chain(units: &[String]) {
     let timings = read_unit_timings();
     if timings.is_empty() {
         println!("The time when unit became active or started is not known.");
-        println!("(No timing data in /run/systemd-rs/timing/)");
+        println!("(No timing data in /run/rust-systemd/timing/)");
         return;
     }
 
@@ -1371,8 +1371,8 @@ fn cmd_log_level(level: &Option<String>) {
             }
         }
         None => {
-            // Query current level — read from /run/systemd-rs/log-level if available
-            if let Ok(level) = fs::read_to_string("/run/systemd-rs/log-level") {
+            // Query current level — read from /run/rust-systemd/log-level if available
+            if let Ok(level) = fs::read_to_string("/run/rust-systemd/log-level") {
                 println!("{}", level.trim());
             } else {
                 println!("info");
@@ -1394,7 +1394,7 @@ fn cmd_log_target(target: &Option<String>) {
             }
         },
         None => {
-            if let Ok(target) = fs::read_to_string("/run/systemd-rs/log-target") {
+            if let Ok(target) = fs::read_to_string("/run/rust-systemd/log-target") {
                 println!("{}", target.trim());
             } else {
                 println!("journal-or-kmsg");
@@ -1540,8 +1540,8 @@ fn cmd_plot() {
     let mut timings = read_unit_timings();
 
     if timings.is_empty() {
-        eprintln!("No unit timing data available in /run/systemd-rs/timing/.");
-        eprintln!("Boot the system with systemd-rs to generate timing data.");
+        eprintln!("No unit timing data available in /run/rust-systemd/timing/.");
+        eprintln!("Boot the system with rust-systemd to generate timing data.");
         process::exit(1);
     }
 
@@ -2003,7 +2003,7 @@ fn cmd_inspect_elf(files: &[String]) {
 
 fn cmd_fdstore(unit: &str) {
     // Attempt to query fd store via the runtime state directory
-    let fdstore_dir = format!("/run/systemd-rs/fdstore/{unit}");
+    let fdstore_dir = format!("/run/rust-systemd/fdstore/{unit}");
     let path = Path::new(&fdstore_dir);
 
     println!("         Unit: {unit}");

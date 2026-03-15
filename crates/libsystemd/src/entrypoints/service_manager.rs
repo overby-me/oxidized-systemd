@@ -31,16 +31,16 @@ pub fn run_service_manager() {
     let target = &conf.target_unit;
     if target == "emergency.target" {
         eprintln!(
-            "systemd-rs: EMERGENCY MODE — booting to emergency.target (requested via kernel command line)"
+            "rust-systemd: EMERGENCY MODE — booting to emergency.target (requested via kernel command line)"
         );
         info!("Emergency mode requested — booting to emergency.target");
     } else if target == "rescue.target" {
         eprintln!(
-            "systemd-rs: RESCUE MODE — booting to rescue.target (requested via kernel command line)"
+            "rust-systemd: RESCUE MODE — booting to rescue.target (requested via kernel command line)"
         );
         info!("Rescue mode requested — booting to rescue.target");
     } else if target != "default.target" {
-        eprintln!("systemd-rs: boot target overridden to {target} (via kernel command line)");
+        eprintln!("rust-systemd: boot target overridden to {target} (via kernel command line)");
         info!("Boot target overridden to {target} via kernel command line");
     } else {
         info!("Booting to default target: {target}");
@@ -49,7 +49,7 @@ pub fn run_service_manager() {
     // Augment PATH with binary directories derived from the unit search
     // paths.  Many upstream systemd unit files use bare command names in
     // ExecStart= (e.g. `systemd-tmpfiles`, `udevadm`).  Real systemd
-    // resolves these via compiled-in prefix paths; systemd-rs adds the
+    // resolves these via compiled-in prefix paths; rust-systemd adds the
     // relevant package directories to PATH instead.
     config::augment_path_from_unit_dirs(&conf.unit_dirs);
 
@@ -60,7 +60,7 @@ pub fn run_service_manager() {
     // They are called with three output directory arguments and can write
     // unit files, symlinks, and .wants/.requires directories.
     //
-    // Built-in generators (fstab, getty) are skipped since systemd-rs has
+    // Built-in generators (fstab, getty) are skipped since rust-systemd has
     // native implementations.  The output directories are then inserted
     // into the unit search path at the correct priority positions.
     let generator_output = generators::run_generators(&conf.unit_dirs);
@@ -95,7 +95,7 @@ pub fn run_service_manager() {
         Ok(signals) => signals,
         Err(e) => {
             unrecoverable_error(format!("Couldnt setup listening to the signals: {e}"));
-            // unrecoverable_error always shutsdown systemd-rs
+            // unrecoverable_error always shutsdown rust-systemd
             unreachable!("");
         }
     };
@@ -306,13 +306,13 @@ fn pid1_specific_setup() {
         );
         match mount_result {
             Ok(()) => {
-                eprintln!("systemd-rs: mounted tmpfs on {where_path}");
+                eprintln!("rust-systemd: mounted tmpfs on {where_path}");
             }
             Err(nix::Error::EBUSY) => {
                 // Already mounted — fine
             }
             Err(e) => {
-                eprintln!("systemd-rs: failed to mount tmpfs on {where_path}: {e}");
+                eprintln!("rust-systemd: failed to mount tmpfs on {where_path}: {e}");
             }
         }
     }
@@ -338,13 +338,13 @@ fn pid1_specific_setup() {
         Some("nsdelegate,memory_recursiveprot"),
     ) {
         Ok(()) => {
-            eprintln!("systemd-rs: mounted cgroup2 on /sys/fs/cgroup");
+            eprintln!("rust-systemd: mounted cgroup2 on /sys/fs/cgroup");
         }
         Err(nix::Error::EBUSY) => {
             // Already mounted — fine
         }
         Err(e) => {
-            eprintln!("systemd-rs: failed to mount cgroup2 on /sys/fs/cgroup: {e}");
+            eprintln!("rust-systemd: failed to mount cgroup2 on /sys/fs/cgroup: {e}");
         }
     }
 
@@ -367,7 +367,7 @@ fn pid1_specific_setup() {
             if f.read_exact(&mut buf).is_ok() {
                 let hex: String = buf.iter().map(|b| format!("{b:02x}")).collect();
                 if std::fs::write(machine_id_path, format!("{hex}\n")).is_ok() {
-                    eprintln!("systemd-rs: generated /etc/machine-id");
+                    eprintln!("rust-systemd: generated /etc/machine-id");
                 }
             }
         }
@@ -387,10 +387,10 @@ fn pid1_specific_setup() {
         if !hostname.is_empty() {
             match nix::unistd::sethostname(hostname) {
                 Ok(()) => {
-                    eprintln!("systemd-rs: set hostname to '{hostname}'");
+                    eprintln!("rust-systemd: set hostname to '{hostname}'");
                 }
                 Err(e) => {
-                    eprintln!("systemd-rs: failed to set hostname: {e}");
+                    eprintln!("rust-systemd: failed to set hostname: {e}");
                 }
             }
         }
@@ -399,7 +399,7 @@ fn pid1_specific_setup() {
     // Ensure home directories exist for all users in /etc/passwd.
     //
     // On NixOS the activation script runs update-users-groups.pl
-    // BEFORE exec'ing into systemd-rs, so /etc/passwd is already
+    // BEFORE exec'ing into rust-systemd, so /etc/passwd is already
     // populated with all declared users by this point.  However the
     // Perl script may fail to create the home directory (e.g. missing
     // /var/lib/nixos state dir on first boot).  We create any missing
@@ -435,24 +435,28 @@ fn pid1_specific_setup() {
 
     let shadow = std::path::Path::new("/etc/shadow");
     if shadow.exists() {
-        eprintln!("systemd-rs: /etc/shadow exists (ok)");
+        eprintln!("rust-systemd: /etc/shadow exists (ok)");
     } else {
-        eprintln!("systemd-rs: WARNING: /etc/shadow does not exist — PAM authentication will fail");
+        eprintln!(
+            "rust-systemd: WARNING: /etc/shadow does not exist — PAM authentication will fail"
+        );
     }
 
     let nsswitch = std::path::Path::new("/etc/nsswitch.conf");
     if nsswitch.exists() {
-        eprintln!("systemd-rs: /etc/nsswitch.conf exists (ok)");
+        eprintln!("rust-systemd: /etc/nsswitch.conf exists (ok)");
     } else {
-        eprintln!("systemd-rs: WARNING: /etc/nsswitch.conf does not exist — NSS lookups may fail");
+        eprintln!(
+            "rust-systemd: WARNING: /etc/nsswitch.conf does not exist — NSS lookups may fail"
+        );
     }
 
     let chkpwd = std::path::Path::new("/run/wrappers/bin/unix_chkpwd");
     if chkpwd.exists() {
-        eprintln!("systemd-rs: /run/wrappers/bin/unix_chkpwd exists (ok)");
+        eprintln!("rust-systemd: /run/wrappers/bin/unix_chkpwd exists (ok)");
     } else {
         eprintln!(
-            "systemd-rs: /run/wrappers/bin/unix_chkpwd not yet present \
+            "rust-systemd: /run/wrappers/bin/unix_chkpwd not yet present \
              (expected — suid-sgid-wrappers.service will create it)"
         );
     }
@@ -466,12 +470,12 @@ fn pid1_specific_setup() {
                 let opts = fields[3];
                 if opts.split(',').any(|o| o == "nosuid") {
                     eprintln!(
-                        "systemd-rs: WARNING: /run/wrappers is mounted with nosuid — \
+                        "rust-systemd: WARNING: /run/wrappers is mounted with nosuid — \
                          suid wrappers will not work! (options: {opts})"
                     );
                 } else {
                     eprintln!(
-                        "systemd-rs: /run/wrappers mounted without nosuid (ok, options: {opts})"
+                        "rust-systemd: /run/wrappers mounted without nosuid (ok, options: {opts})"
                     );
                 }
                 break;
@@ -486,19 +490,19 @@ fn pid1_specific_setup() {
 fn ensure_home_directories() {
     let passwd_path = std::path::Path::new("/etc/passwd");
     if !passwd_path.exists() {
-        eprintln!("systemd-rs: /etc/passwd does not exist, skipping home directory creation");
+        eprintln!("rust-systemd: /etc/passwd does not exist, skipping home directory creation");
         return;
     }
     let passwd_contents = match std::fs::read_to_string(passwd_path) {
         Ok(c) => c,
         Err(e) => {
-            eprintln!("systemd-rs: failed to read /etc/passwd: {e}");
+            eprintln!("rust-systemd: failed to read /etc/passwd: {e}");
             return;
         }
     };
 
     let line_count = passwd_contents.lines().count();
-    eprintln!("systemd-rs: ensuring home directories ({line_count} passwd entries)");
+    eprintln!("rust-systemd: ensuring home directories ({line_count} passwd entries)");
 
     for line in passwd_contents.lines() {
         let fields: Vec<&str> = line.split(':').collect();
@@ -533,7 +537,7 @@ fn ensure_home_directories() {
         match std::fs::create_dir_all(home_path) {
             Ok(()) => {}
             Err(e) => {
-                eprintln!("systemd-rs: failed to create home {home} for {user}: {e}");
+                eprintln!("rust-systemd: failed to create home {home} for {user}: {e}");
                 continue;
             }
         }
@@ -544,7 +548,7 @@ fn ensure_home_directories() {
         };
         unsafe { libc::chown(c_path.as_ptr(), uid, gid) };
         unsafe { libc::chmod(c_path.as_ptr(), 0o755) };
-        eprintln!("systemd-rs: created home directory {home} for {user} (uid={uid}, gid={gid})");
+        eprintln!("rust-systemd: created home directory {home} for {user} (uid={uid}, gid={gid})");
     }
 }
 

@@ -467,7 +467,7 @@ fn parse_args(argv: &[String]) -> Result<Args, String> {
                 return Ok(args);
             }
             "--version" => {
-                println!("systemd-dissect (systemd-rs)");
+                println!("systemd-dissect (rust-systemd)");
                 process::exit(0);
             }
             "--mount" | "-m" => args.command = Command::Mount,

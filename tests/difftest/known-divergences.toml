@@ -1,4 +1,4 @@
-# Known divergences between systemd-rs and real systemd.
+# Known divergences between rust-systemd and real systemd.
 #
 # Each [[divergence]] entry records a differential test that is expected to
 # produce divergent results. The `test` field must match the test function

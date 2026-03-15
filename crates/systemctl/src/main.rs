@@ -1,7 +1,7 @@
-//! systemctl — CLI control tool for the systemd-rs service manager.
+//! systemctl — CLI control tool for the rust-systemd service manager.
 //!
 //! This is the successor to `rsdctl`. It packs CLI arguments into the
-//! JSON-RPC 2.0 format and sends them to the systemd-rs control socket.
+//! JSON-RPC 2.0 format and sends them to the rust-systemd control socket.
 //! It reads the response and pretty-prints it.
 //!
 //! Handles common systemctl flags (stripping them before sending to PID 1):
@@ -107,7 +107,7 @@ fn main() {
     }
 
     if args[0] == "--version" {
-        println!("systemctl (systemd-rs) 258");
+        println!("systemctl (rust-systemd) 258");
         return;
     }
 
@@ -118,8 +118,8 @@ fn main() {
         // First arg looks like an address (host:port or /path/to/socket)
         args.remove(0)
     } else {
-        // Default to the systemd-rs control socket
-        "/run/systemd/systemd-rs-notify/control.socket".to_owned()
+        // Default to the rust-systemd control socket
+        "/run/systemd/rust-systemd-notify/control.socket".to_owned()
     };
 
     // Extract known flags and separate them from positional arguments.
@@ -357,7 +357,7 @@ fn main() {
             }
             Err(e) => {
                 if !quiet {
-                    eprintln!("Error communicating with systemd-rs: {e}");
+                    eprintln!("Error communicating with rust-systemd: {e}");
                 }
                 std::process::exit(1);
             }
@@ -665,7 +665,7 @@ fn main() {
         }
         Err(e) => {
             if !quiet {
-                eprintln!("Error communicating with systemd-rs: {e}");
+                eprintln!("Error communicating with rust-systemd: {e}");
             }
             // For is-active, connection failure means the unit is not active.
             if positional[0] == "is-active" {
@@ -922,12 +922,12 @@ fn format_timer_table(timers: &[Value]) {
 fn print_help() {
     println!(
         "\
-systemctl — control tool for the systemd-rs service manager
+systemctl — control tool for the rust-systemd service manager
 
 Usage:
     systemctl [OPTIONS] <command> [args...]
 
-The control socket defaults to /run/systemd/systemd-rs-notify/control.socket.
+The control socket defaults to /run/systemd/rust-systemd-notify/control.socket.
 You can also set the SYSTEMCTL_ADDR environment variable, or pass a socket
 path or TCP address as the first positional argument.
 

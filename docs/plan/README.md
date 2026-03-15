@@ -4,7 +4,7 @@ This document describes the phased plan for rewriting systemd as a pure Rust dro
 
 ## Current Status
 
-**🟢 NixOS boots successfully with systemd-rs as PID 1** — reaches `multi-user.target` with login prompt in ~6 seconds (cloud-hypervisor VM, full networking via networkd + resolved). **7,522 unit tests passing** across 75 crates.
+**🟢 NixOS boots successfully with rust-systemd as PID 1** — reaches `multi-user.target` with login prompt in ~6 seconds (cloud-hypervisor VM, full networking via networkd + resolved). **7,522 unit tests passing** across 75 crates.
 
 | Phase | Status | Details |
 |-------|--------|---------|
@@ -29,4 +29,4 @@ Legend: ✅ = complete, 🔶 = partial, ❌ = not started
 - **[phase-4.md](phase-4.md)** — Phase 4: Extended Services
 - **[phase-5.md](phase-5.md)** — Phase 5: Utilities, Boot & Polish
 - **[phase-6.md](phase-6.md)** — Phase 6: Differential Testing Against Real systemd
-- **[integration.md](integration.md)** — Integration testing with nixos-rs
+- **[integration.md](integration.md)** — Integration testing with rust-nixos

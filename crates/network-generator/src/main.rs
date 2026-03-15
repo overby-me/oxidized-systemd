@@ -1249,7 +1249,7 @@ fn print_help() {
 }
 
 fn print_version() {
-    eprintln!("systemd-network-generator (systemd-rs)");
+    eprintln!("systemd-network-generator (rust-systemd)");
 }
 
 fn run(cmdline_path: &str, output_dir: &Path) -> i32 {

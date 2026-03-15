@@ -1,7 +1,7 @@
 //! Proc-macro crate for the `difftest` differential testing framework.
 //!
 //! Provides the `#[difftest]` attribute macro for registering differential
-//! tests that compare systemd and systemd-rs behavior.
+//! tests that compare systemd and rust-systemd behavior.
 
 use proc_macro::TokenStream;
 use quote::quote;

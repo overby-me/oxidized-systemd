@@ -17,7 +17,7 @@
 //! Messages are written as:
 //!
 //! ```text
-//! <priority>systemd-rs[unit]: message\n
+//! <priority>rust-systemd[unit]: message\n
 //! ```
 //!
 //! where `priority` follows the syslog convention (`<4>` = warning,
@@ -100,19 +100,22 @@ impl log::Log for KmsgLogger {
             return;
         }
 
-        let unit = UNIT_NAME.get().map(String::as_str).unwrap_or("systemd-rs");
+        let unit = UNIT_NAME
+            .get()
+            .map(String::as_str)
+            .unwrap_or("rust-systemd");
         let priority = level_to_kmsg_priority(record.level());
 
-        // Format: <priority>systemd-rs[unit]: message\n
+        // Format: <priority>rust-systemd[unit]: message\n
         //
         // We include the module path (if available) as a structured prefix
         // so that grep on `dmesg` output can isolate subsystems.
         let msg = match record.module_path() {
             Some(module) => format!(
-                "<{priority}>systemd-rs[{unit}] {module}: {}\n",
+                "<{priority}>rust-systemd[{unit}] {module}: {}\n",
                 record.args()
             ),
-            None => format!("<{priority}>systemd-rs[{unit}]: {}\n", record.args()),
+            None => format!("<{priority}>rust-systemd[{unit}]: {}\n", record.args()),
         };
 
         // ── Write to /dev/kmsg ────────────────────────────────────────

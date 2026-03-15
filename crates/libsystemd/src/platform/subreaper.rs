@@ -10,7 +10,7 @@ pub fn become_subreaper(set: bool) {
             libc::prctl(libc::PR_SET_CHILD_SUBREAPER, 0)
         };
         if res < 0 {
-            error!("Couldnt set subreaper for systemd-rs");
+            error!("Couldnt set subreaper for rust-systemd");
         }
     }
 }
@@ -71,7 +71,7 @@ pub fn become_subreaper(set: bool) {
             )
         };
         if res < 0 {
-            eprintln!("Couldnt set subreaper for systemd-rs");
+            eprintln!("Couldnt set subreaper for rust-systemd");
             return;
         } else {
             eprintln!("Acquire/Release subreaper privilege successfully");

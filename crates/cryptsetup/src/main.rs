@@ -941,7 +941,7 @@ fn run() -> Result<(), (String, i32)> {
             Ok(())
         }
         Command::Version => {
-            eprintln!("systemd-cryptsetup (systemd-rs) 0.1.0");
+            eprintln!("systemd-cryptsetup (rust-systemd) 0.1.0");
             Ok(())
         }
         Command::Attach {

@@ -1,9 +1,9 @@
 #![allow(clippy::result_large_err)]
 #![allow(clippy::large_enum_variant)]
 
-//! `libsystemd` is the core library for systemd-rs, providing shared
+//! `libsystemd` is the core library for rust-systemd, providing shared
 //! functionality used by the service manager (`systemd`), control tool
-//! (`systemctl`), and all other systemd-rs components.
+//! (`systemctl`), and all other rust-systemd components.
 //!
 //! It contains:
 //! - Unit file parsing (INI-style with systemd extensions)

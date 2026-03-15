@@ -1,6 +1,6 @@
-//! The `RuntimeInfo` encapsulates all information systemd-rs needs to do its job. The units, the pid and filedescriptors and the systemd-rs config.
+//! The `RuntimeInfo` encapsulates all information rust-systemd needs to do its job. The units, the pid and filedescriptors and the rust-systemd config.
 //!
-//! In the lifetime of systemd-rs there will only ever be one `RuntimeInfo` which is passed wrapped inside the `ArcMutRuntimeInfo`.
+//! In the lifetime of rust-systemd there will only ever be one `RuntimeInfo` which is passed wrapped inside the `ArcMutRuntimeInfo`.
 //!
 //! The idea here is to make as much as possible concurrently readable while still being able to get exclusive access to e.g. remove units.
 //! Note that units themselves contain `RWLocks` so they can be worked on concurrently as long as no `write()` lock is placed on the `RuntimeInfo`.

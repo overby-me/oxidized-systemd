@@ -22,7 +22,7 @@
 //! ## Implementation
 //!
 //! This module uses a built-in minimal TLS 1.2/1.3 implementation via
-//! the system's OpenSSL/rustls bindings.  Since the systemd-rs project
+//! the system's OpenSSL/rustls bindings.  Since the rust-systemd project
 //! targets NixOS and prefers minimal dependencies, we use a raw-socket
 //! approach with the `native-tls` or direct syscall interface.
 //!

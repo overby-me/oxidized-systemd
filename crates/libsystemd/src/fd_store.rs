@@ -1,7 +1,7 @@
 //! `FDStore` is a sort of key-value store that holds open file descriptors.
 //! These can come from two sources:
 //! 1. Socket units. These are found with the name of their unit (eg "myservice.socket")
-//! 1. The `sd_notify` API which can ask systemd-rs to store some file descriptors so they stay open over restarts
+//! 1. The `sd_notify` API which can ask rust-systemd to store some file descriptors so they stay open over restarts
 use std::{
     collections::HashMap,
     os::unix::io::{AsRawFd, RawFd},

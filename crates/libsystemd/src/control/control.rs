@@ -1169,7 +1169,7 @@ fn create_transient_unit(
 
     let platform_specific = PlatformSpecificServiceFields {
         #[cfg(target_os = "linux")]
-        cgroup_path: std::path::PathBuf::from(format!("/sys/fs/cgroup/systemd-rs/{unit_name}")),
+        cgroup_path: std::path::PathBuf::from(format!("/sys/fs/cgroup/rust-systemd/{unit_name}")),
     };
 
     let service_conf = ServiceConfig {
@@ -3965,7 +3965,7 @@ mod tests {
     fn test_find_sleep_binary_returns_path_or_none() {
         // Calling find_sleep_binary should always return a valid Option
         // (not panic). On most dev machines it will be None; on NixOS
-        // with systemd-rs installed it will be Some.
+        // with rust-systemd installed it will be Some.
         let result = find_sleep_binary();
         if let Some(path) = &result {
             assert!(path.to_string_lossy().contains("systemd-sleep"));

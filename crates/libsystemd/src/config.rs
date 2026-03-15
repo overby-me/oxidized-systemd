@@ -1,11 +1,11 @@
-//! Configuration for systemd-rs.
+//! Configuration for rust-systemd.
 //!
-//! As a drop-in replacement for systemd, systemd-rs uses the same well-known
+//! As a drop-in replacement for systemd, rust-systemd uses the same well-known
 //! default paths that systemd uses.  There is no config file and no
-//! systemd-rs-specific environment variables — unit directories, the default
+//! rust-systemd-specific environment variables — unit directories, the default
 //! target, and all other settings match systemd's compiled-in defaults.
 //!
-//! In addition to the standard system-wide unit directories, systemd-rs
+//! In addition to the standard system-wide unit directories, rust-systemd
 //! discovers its own package's `lib/systemd/system/` directory by walking
 //! up from its executable path.  This mirrors what systemd does with its
 //! compile-time `rootlibdir` setting (e.g. on NixOS the systemd package
@@ -47,7 +47,7 @@ const SYSTEM_UNIT_DIRS: &[&str] = &[
 ///
 /// We walk up from the executable's directory (at most 5 levels) and check
 /// whether `<ancestor>/lib/systemd/system` exists.  This handles both
-/// `$out/bin/systemd-rs` and `$out/lib/systemd/systemd` layouts.
+/// `$out/bin/rust-systemd` and `$out/lib/systemd/systemd` layouts.
 fn package_unit_dir() -> Option<PathBuf> {
     let exe = std::env::current_exe().ok()?;
     let mut dir = exe.parent()?;
@@ -66,7 +66,7 @@ fn package_unit_dir() -> Option<PathBuf> {
 ///
 /// Many upstream systemd unit files use bare command names in `ExecStart=`
 /// (e.g. `systemd-tmpfiles`, `udevadm`).  Real systemd resolves these via
-/// compiled-in prefix paths.  systemd-rs instead adds the relevant package
+/// compiled-in prefix paths.  rust-systemd instead adds the relevant package
 /// directories to `PATH` so that both `which` look-ups and `Command::new`
 /// find the binaries.
 ///
@@ -242,14 +242,14 @@ pub fn load_config() -> (LoggingConfig, Config) {
     let config = Config {
         unit_dirs,
         target_unit,
-        notification_sockets_dir: PathBuf::from("/run/systemd/systemd-rs-notify"),
+        notification_sockets_dir: PathBuf::from("/run/systemd/rust-systemd-notify"),
         self_path,
     };
 
     let logging_config = LoggingConfig {
         log_to_stdout: true,
         log_to_disk: false,
-        log_dir: PathBuf::from("/var/log/systemd-rs"),
+        log_dir: PathBuf::from("/var/log/rust-systemd"),
     };
 
     (logging_config, config)
@@ -408,14 +408,14 @@ mod tests {
     #[test]
     fn test_typical_nixos_cmdline() {
         // A realistic NixOS kernel command line — no target override expected
-        let cmdline = "init=/nix/store/abc-systemd-rs/lib/systemd/systemd \
+        let cmdline = "init=/nix/store/abc-rust-systemd/lib/systemd/systemd \
                         loglevel=4 console=ttyS0";
         assert_eq!(target_unit_from_cmdline_str(cmdline), None);
     }
 
     #[test]
     fn test_typical_emergency_cmdline() {
-        let cmdline = "init=/nix/store/abc-systemd-rs/lib/systemd/systemd \
+        let cmdline = "init=/nix/store/abc-rust-systemd/lib/systemd/systemd \
                         loglevel=4 console=ttyS0 systemd.unit=emergency.target";
         assert_eq!(
             target_unit_from_cmdline_str(cmdline),

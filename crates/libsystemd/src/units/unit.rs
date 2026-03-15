@@ -1798,7 +1798,7 @@ pub struct UnitConfig {
 
     /// Alternative names for this unit from `Alias=` in the `[Install]` section.
     /// In systemd, these create symlinks when the unit is enabled.
-    /// In systemd-rs, units can be looked up by any of their aliases.
+    /// In rust-systemd, units can be looked up by any of their aliases.
     pub aliases: Vec<String>,
 
     /// If true, this unit will not be stopped when isolating to another target.

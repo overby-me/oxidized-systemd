@@ -371,7 +371,7 @@ fn apply_process_properties(cli: &Cli) -> Result<(), String> {
     Ok(())
 }
 
-/// Try to connect to the systemd-rs control socket and create a
+/// Try to connect to the rust-systemd control socket and create a
 /// transient unit. Returns `Ok(true)` if successful, `Ok(false)` if the
 /// control socket is not available (falling back to direct exec).
 fn try_create_transient_unit(cli: &Cli, unit_name: &str) -> Result<bool, String> {
@@ -380,7 +380,7 @@ fn try_create_transient_unit(cli: &Cli, unit_name: &str) -> Result<bool, String>
     use std::io::Write;
     use std::os::unix::net::UnixStream;
 
-    let socket_path = "/run/systemd/systemd-rs-notify/control.socket";
+    let socket_path = "/run/systemd/rust-systemd-notify/control.socket";
 
     let stream = match UnixStream::connect(socket_path) {
         Ok(s) => s,
@@ -388,7 +388,7 @@ fn try_create_transient_unit(cli: &Cli, unit_name: &str) -> Result<bool, String>
     };
 
     // Build the transient unit creation request.
-    // The systemd-rs control protocol uses JSON-RPC 2.0.
+    // The rust-systemd control protocol uses JSON-RPC 2.0.
     let mut properties = serde_json::Map::new();
     properties.insert("unit".into(), Value::String(unit_name.to_string()));
 
@@ -502,7 +502,9 @@ fn main() {
                 process::exit(1);
             }
 
-            eprintln!("Note: systemd-rs control socket not available, executing command directly.");
+            eprintln!(
+                "Note: rust-systemd control socket not available, executing command directly."
+            );
         }
         Err(e) => {
             eprintln!("Warning: Failed to create transient unit: {e}");

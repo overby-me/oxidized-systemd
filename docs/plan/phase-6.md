@@ -1,11 +1,11 @@
 # Phase 6 — Differential Testing Against Real systemd
 
-Systematic behavioral equivalence verification between systemd-rs and upstream systemd. Each test category runs identical inputs through both implementations and asserts equivalent outputs, state transitions, and side effects. Tests execute in NixOS VMs (via nixos-rs) where both real systemd and systemd-rs are available, enabling true apples-to-apples comparison on the same OS configuration.
+Systematic behavioral equivalence verification between rust-systemd and upstream systemd. Each test category runs identical inputs through both implementations and asserts equivalent outputs, state transitions, and side effects. Tests execute in NixOS VMs (via rust-nixos) where both real systemd and rust-systemd are available, enabling true apples-to-apples comparison on the same OS configuration.
 
 ## Infrastructure
 
 - ✅ **Differential test harness (`difftest`)** — new `crates/difftest` crate providing the core framework; `DiffTest` trait with `run_systemd(&self) -> TestOutput` and `run_systemd_rs(&self) -> TestOutput` methods plus `compare(&self, left: &TestOutput, right: &TestOutput) -> DiffResult`; `TestOutput` enum (structured JSON, raw text, binary blob, exit code, file tree snapshot, D-Bus property map); `DiffResult` with `Identical`, `Equivalent(normalization_notes)`, `Divergent(explanation)` variants; built-in normalizers for timestamps, PIDs, boot IDs, machine IDs, memory addresses, and non-deterministic ordering; snapshot-based comparison with `update_snapshots` mode for approving intentional divergences; JUnit XML and JSON report output; `#[difftest]` proc-macro attribute for test registration; parallel test execution with configurable concurrency
-- ❌ **NixOS VM test environment** — dual-VM test infrastructure: one VM boots real systemd, one boots systemd-rs, both from identical NixOS configurations (same unit files, same packages, same kernel); shared test coordination via virtio-vsock or serial console protocol; `DiffTestRunner` orchestrates test execution across both VMs, collects outputs, runs comparison; single-VM mode available where real systemd binaries are present alongside systemd-rs for tool-level comparison; Nix expression (`tests/difftest.nix`) defines the test VM configuration; `just difftest` command in project root
+- ❌ **NixOS VM test environment** — dual-VM test infrastructure: one VM boots real systemd, one boots rust-systemd, both from identical NixOS configurations (same unit files, same packages, same kernel); shared test coordination via virtio-vsock or serial console protocol; `DiffTestRunner` orchestrates test execution across both VMs, collects outputs, runs comparison; single-VM mode available where real systemd binaries are present alongside rust-systemd for tool-level comparison; Nix expression (`tests/difftest.nix`) defines the test VM configuration; `just difftest` command in project root
 - ✅ **Golden file corpus** — curated collection of unit files, configuration files, and input data covering edge cases; sourced from: upstream systemd test suite (`test/` directory), Fedora/Debian/Arch/NixOS shipped unit files, fuzzer-generated edge cases, manually crafted regression files; organized by category (`units/`, `configs/`, `journal/`, `network/`, `generators/`); version-pinned to specific systemd release (v256) for reproducibility
 - ❌ **CI integration** — Tangled workflow running differential tests on every PR; matrix of systemd versions (v254, v255, v256) to catch version-specific regressions; test result summary posted as PR comment with divergence count and links to full report; nightly full-corpus run with extended timeout; failure on any new `Divergent` result (previously-known divergences tracked in `tests/difftest/known-divergences.toml`)
 
@@ -147,7 +147,7 @@ Systematic behavioral equivalence verification between systemd-rs and upstream s
 
 ## Cryptographic & Security Tools
 
-- ❌ **systemd-creds** — compare `encrypt`/`decrypt` roundtrip for all `--with-key` modes (`host`, `tpm2`, `host+tpm2`, `null`, `auto`); verify wire format compatibility (credential encrypted by real systemd decryptable by systemd-rs and vice versa); compare `--pretty` output format; compare `has-tpm2` detection; compare `list` output
+- ❌ **systemd-creds** — compare `encrypt`/`decrypt` roundtrip for all `--with-key` modes (`host`, `tpm2`, `host+tpm2`, `null`, `auto`); verify wire format compatibility (credential encrypted by real systemd decryptable by rust-systemd and vice versa); compare `--pretty` output format; compare `has-tpm2` detection; compare `list` output
 - ❌ **cryptsetup/veritysetup/integritysetup** — compare device-mapper table construction for identical inputs; verify dm-crypt/dm-verity/dm-integrity devices created by one implementation can be opened by the other; compare option parsing for all supported flags
 
 ## Fuzz-Driven Differential Testing
@@ -160,8 +160,8 @@ Systematic behavioral equivalence verification between systemd-rs and upstream s
 
 ## Compatibility & Regression
 
-- ❌ **Cross-version credential compatibility** — encrypt credentials with systemd v254/v255/v256 and decrypt with systemd-rs; encrypt with systemd-rs and decrypt with each systemd version; verify all `--with-key` modes
-- ❌ **Journal format compatibility** — write journal entries with real journald, read with systemd-rs journalctl and vice versa; verify cursor strings are interoperable; test export format roundtrip
+- ❌ **Cross-version credential compatibility** — encrypt credentials with systemd v254/v255/v256 and decrypt with rust-systemd; encrypt with rust-systemd and decrypt with each systemd version; verify all `--with-key` modes
+- ❌ **Journal format compatibility** — write journal entries with real journald, read with rust-systemd journalctl and vice versa; verify cursor strings are interoperable; test export format roundtrip
 - ❌ **Unit file backward compatibility** — test unit files from systemd v230–v256 era (pre-and-post various directive additions); verify parsing succeeds and unknown directives are gracefully ignored
 - ❌ **Distro unit file corpus** — parse all unit files from Fedora 39/40, Debian 12/13, Ubuntu 24.04, Arch Linux, NixOS 24.05/24.11 package sets; compare parsed results against real systemd on same distro; track pass rate per distro
 

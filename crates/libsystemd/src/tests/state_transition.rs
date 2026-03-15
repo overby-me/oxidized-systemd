@@ -55,7 +55,7 @@ fn test_service_state_transitions_inner() {
             notification_sockets_dir: "./notifications".into(),
             target_unit: "".into(),
             unit_dirs: vec![],
-            self_path: std::path::PathBuf::from("./target/debug/systemd-rs"),
+            self_path: std::path::PathBuf::from("./target/debug/rust-systemd"),
         },
         fd_store: std::sync::RwLock::new(crate::fd_store::FDStore::default()),
         pid_table: std::sync::Arc::new(std::sync::Mutex::new(PidTable::default())),

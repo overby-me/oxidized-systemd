@@ -1,7 +1,7 @@
-//! `difftest` — Differential testing framework for systemd-rs.
+//! `difftest` — Differential testing framework for rust-systemd.
 //!
 //! Provides infrastructure for running identical inputs through both real systemd
-//! and systemd-rs, then comparing outputs for behavioral equivalence.
+//! and rust-systemd, then comparing outputs for behavioral equivalence.
 //!
 //! # Core Types
 //!
@@ -28,8 +28,8 @@
 //!         TestOutput::RawText("output from systemd".into())
 //!     }
 //!     fn run_systemd_rs(&self) -> TestOutput {
-//!         // Execute against systemd-rs
-//!         TestOutput::RawText("output from systemd-rs".into())
+//!         // Execute against rust-systemd
+//!         TestOutput::RawText("output from rust-systemd".into())
 //!     }
 //!     fn compare(&self, left: &TestOutput, right: &TestOutput) -> DiffResult {
 //!         if left == right {
@@ -60,7 +60,7 @@ use serde::{Deserialize, Serialize};
 
 // ── Core trait ──────────────────────────────────────────────────────────────
 
-/// A single differential test case that compares systemd and systemd-rs
+/// A single differential test case that compares systemd and rust-systemd
 /// behavior for identical inputs.
 pub trait DiffTest: Send + Sync {
     /// Human-readable test name, used in reports and filtering.
@@ -74,7 +74,7 @@ pub trait DiffTest: Send + Sync {
     /// Run the test against **real systemd** and capture output.
     fn run_systemd(&self) -> TestOutput;
 
-    /// Run the test against **systemd-rs** and capture output.
+    /// Run the test against **rust-systemd** and capture output.
     fn run_systemd_rs(&self) -> TestOutput;
 
     /// Compare two outputs and produce a [`DiffResult`].
@@ -89,7 +89,7 @@ pub trait DiffTest: Send + Sync {
 
 // ── TestOutput ──────────────────────────────────────────────────────────────
 
-/// Output captured from either the real systemd or systemd-rs implementation.
+/// Output captured from either the real systemd or rust-systemd implementation.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum TestOutput {
     /// Structured JSON value (e.g. from `systemctl show -o json`).
@@ -183,7 +183,7 @@ impl fmt::Display for TestOutput {
 
 // ── DiffResult ──────────────────────────────────────────────────────────────
 
-/// The result of comparing outputs from systemd and systemd-rs.
+/// The result of comparing outputs from systemd and rust-systemd.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum DiffResult {
     /// Outputs are byte-for-byte identical.
@@ -243,7 +243,7 @@ pub fn default_compare(left: &TestOutput, right: &TestOutput) -> DiffResult {
         return DiffResult::Skipped(format!("systemd unavailable: {reason}"));
     }
     if let TestOutput::Unavailable(reason) = right {
-        return DiffResult::Skipped(format!("systemd-rs unavailable: {reason}"));
+        return DiffResult::Skipped(format!("rust-systemd unavailable: {reason}"));
     }
 
     // Fast path: identical without normalization
@@ -280,12 +280,12 @@ fn build_divergence_explanation(left: &TestOutput, right: &TestOutput) -> String
                 let rl = right_lines.get(i).unwrap_or(&"<missing>");
                 if ll != rl {
                     out.push_str(&format!("  line {}: systemd:    {ll}\n", i + 1));
-                    out.push_str(&format!("  line {}: systemd-rs: {rl}\n", i + 1));
+                    out.push_str(&format!("  line {}: rust-systemd: {rl}\n", i + 1));
                 }
             }
             if left_lines.len() != right_lines.len() {
                 out.push_str(&format!(
-                    "  (systemd: {} lines, systemd-rs: {} lines)\n",
+                    "  (systemd: {} lines, rust-systemd: {} lines)\n",
                     left_lines.len(),
                     right_lines.len()
                 ));
@@ -293,11 +293,11 @@ fn build_divergence_explanation(left: &TestOutput, right: &TestOutput) -> String
             out
         }
         (TestOutput::ExitCode(l), TestOutput::ExitCode(r)) => {
-            format!("Exit code differs: systemd={l}, systemd-rs={r}")
+            format!("Exit code differs: systemd={l}, rust-systemd={r}")
         }
         (TestOutput::StructuredJson(l), TestOutput::StructuredJson(r)) => {
             format!(
-                "JSON output differs:\n  systemd:    {}\n  systemd-rs: {}",
+                "JSON output differs:\n  systemd:    {}\n  rust-systemd: {}",
                 serde_json::to_string(l).unwrap_or_default(),
                 serde_json::to_string(r).unwrap_or_default(),
             )
@@ -311,7 +311,7 @@ fn build_divergence_explanation(left: &TestOutput, right: &TestOutput) -> String
                 let rv = r.get(key);
                 if lv != rv {
                     out.push_str(&format!(
-                        "  {key}: systemd={}, systemd-rs={}\n",
+                        "  {key}: systemd={}, rust-systemd={}\n",
                         lv.map(|s| s.as_str()).unwrap_or("<missing>"),
                         rv.map(|s| s.as_str()).unwrap_or("<missing>"),
                     ));
@@ -327,7 +327,7 @@ fn build_divergence_explanation(left: &TestOutput, right: &TestOutput) -> String
                 let rv = r.get(key);
                 if lv != rv {
                     out.push_str(&format!(
-                        "  {key}: systemd={}, systemd-rs={}\n",
+                        "  {key}: systemd={}, rust-systemd={}\n",
                         lv.map(|s| s.as_str()).unwrap_or("<missing>"),
                         rv.map(|s| s.as_str()).unwrap_or("<missing>"),
                     ));
@@ -336,7 +336,9 @@ fn build_divergence_explanation(left: &TestOutput, right: &TestOutput) -> String
             out
         }
         _ => {
-            format!("Output type or content differs:\n  systemd:    {left}\n  systemd-rs: {right}")
+            format!(
+                "Output type or content differs:\n  systemd:    {left}\n  rust-systemd: {right}"
+            )
         }
     }
 }

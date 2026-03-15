@@ -672,7 +672,7 @@ mod tests {
     #[test]
     fn test_keyring_cache_get_nonexistent() {
         // A random key name that certainly doesn't exist
-        let keyname = format!("systemd-rs-test-nonexistent-{}", uuid::Uuid::new_v4());
+        let keyname = format!("rust-systemd-test-nonexistent-{}", uuid::Uuid::new_v4());
         let result = keyring_cache_get(&keyname);
         assert!(
             result.is_none(),
@@ -686,7 +686,7 @@ mod tests {
     /// allow `add_key` but restrict `keyctl(KEYCTL_READ)` or `request_key`,
     /// so we probe once and skip round-trip assertions when unsupported.
     fn keyring_round_trip_works() -> bool {
-        let probe_name = format!("systemd-rs-probe-{}", uuid::Uuid::new_v4());
+        let probe_name = format!("rust-systemd-probe-{}", uuid::Uuid::new_v4());
         let probe_payload = b"probe";
         match sys_add_key(
             "user",
@@ -720,7 +720,7 @@ mod tests {
             return;
         }
 
-        let keyname = format!("systemd-rs-test-{}", uuid::Uuid::new_v4());
+        let keyname = format!("rust-systemd-test-{}", uuid::Uuid::new_v4());
         let password = "test-password-12345";
 
         keyring_cache_put(&keyname, password).expect("put should succeed");
@@ -741,7 +741,7 @@ mod tests {
             return;
         }
 
-        let keyname = format!("systemd-rs-test-overwrite-{}", uuid::Uuid::new_v4());
+        let keyname = format!("rust-systemd-test-overwrite-{}", uuid::Uuid::new_v4());
         let password1 = "first-password";
         let password2 = "second-password";
 
@@ -762,7 +762,7 @@ mod tests {
             return;
         }
 
-        let keyname = format!("systemd-rs-test-empty-{}", uuid::Uuid::new_v4());
+        let keyname = format!("rust-systemd-test-empty-{}", uuid::Uuid::new_v4());
 
         keyring_cache_put(&keyname, "").expect("put empty should succeed");
         let cached = keyring_cache_get(&keyname);
@@ -782,7 +782,7 @@ mod tests {
             return;
         }
 
-        let keyname = format!("systemd-rs-test-unicode-{}", uuid::Uuid::new_v4());
+        let keyname = format!("rust-systemd-test-unicode-{}", uuid::Uuid::new_v4());
         let password = "пароль🔑密码";
 
         keyring_cache_put(&keyname, password).expect("put unicode should succeed");
@@ -850,7 +850,7 @@ mod tests {
             return;
         }
 
-        let keyname = format!("systemd-rs-test-long-{}", uuid::Uuid::new_v4());
+        let keyname = format!("rust-systemd-test-long-{}", uuid::Uuid::new_v4());
         // 4KB password
         let password: String = (0..4096).map(|i| (b'a' + (i % 26) as u8) as char).collect();
 

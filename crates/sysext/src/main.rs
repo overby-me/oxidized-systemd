@@ -188,7 +188,7 @@ fn parse_args(argv: &[String]) -> Result<Args, String> {
                 return Ok(args);
             }
             "--version" => {
-                println!("systemd-sysext (systemd-rs)");
+                println!("systemd-sysext (rust-systemd)");
                 process::exit(0);
             }
             "--root" => {

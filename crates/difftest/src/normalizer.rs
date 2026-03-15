@@ -1,6 +1,6 @@
 //! Output normalizers for canonicalizing non-deterministic values.
 //!
-//! When comparing outputs from real systemd and systemd-rs, certain values are
+//! When comparing outputs from real systemd and rust-systemd, certain values are
 //! inherently non-deterministic (PIDs, timestamps, boot IDs, etc.). The
 //! [`Normalizer`] pipeline rewrites these values to canonical placeholders so
 //! that semantically equivalent outputs compare as equal.
@@ -93,7 +93,7 @@ impl Normalizer {
     }
 
     /// Build a comma-separated string of which normalizers actually changed
-    /// the output when comparing `left` (systemd) and `right` (systemd-rs).
+    /// the output when comparing `left` (systemd) and `right` (rust-systemd).
     ///
     /// This is used for the notes in [`crate::DiffResult::Equivalent`].
     pub fn applied_normalizations(&self, left: &TestOutput, right: &TestOutput) -> String {
@@ -384,7 +384,7 @@ impl Normalize for MemoryAddressNormalizer {
 /// comparison.
 ///
 /// This is the last normalizer in the default pipeline. It handles cases where
-/// systemd and systemd-rs produce the same set of items but in a different
+/// systemd and rust-systemd produce the same set of items but in a different
 /// order (e.g. `list-units` output, dependency lists, D-Bus signal ordering).
 ///
 /// Note: this normalizer only applies to [`TestOutput::RawText`] (line sort),

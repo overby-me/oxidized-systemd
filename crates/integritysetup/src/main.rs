@@ -1571,7 +1571,7 @@ fn run() -> Result<(), (String, i32)> {
             Ok(())
         }
         Command::Version => {
-            eprintln!("systemd-integritysetup (systemd-rs) 0.1.0");
+            eprintln!("systemd-integritysetup (rust-systemd) 0.1.0");
             Ok(())
         }
         Command::Attach {

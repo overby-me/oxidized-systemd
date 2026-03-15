@@ -3,7 +3,7 @@ name = "difftest"
 version = "0.1.0"
 authors = ["Niclas Overby <niclas@overby.me>"]
 edition = "2024"
-description = "Differential testing framework for systemd-rs vs real systemd"
+description = "Differential testing framework for rust-systemd vs real systemd"
 
 [dependencies]
 difftest-macros = { path = "../difftest-macros" }

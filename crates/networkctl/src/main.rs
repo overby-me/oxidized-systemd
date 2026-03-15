@@ -103,7 +103,7 @@ fn cmd_persistent_storage(enable: &str) {
 }
 
 fn print_version() {
-    println!("networkctl (systemd-rs) 0.1.0");
+    println!("networkctl (rust-systemd) 0.1.0");
 }
 
 // ---------------------------------------------------------------------------

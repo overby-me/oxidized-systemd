@@ -81,7 +81,7 @@ pub fn start_socketactivation_thread(run_info: ArcMutRuntimeInfo) {
                             }
 
                             // mark socket as activated, removing it from the set of
-                            // fds systemd-rs is actively listening on
+                            // fds rust-systemd is actively listening on
                             if let Specific::Socket(specific) = &sock_unit.specific {
                                 let mut_state = &mut *specific.state.write_poisoned();
                                 mut_state.sock.activated = true;

@@ -79,7 +79,7 @@ fn main() {
                 return;
             }
             if first == "--version" {
-                println!("systemd-resolve (systemd-rs)");
+                println!("systemd-resolve (rust-systemd)");
                 return;
             }
             if first == "--status" {
@@ -116,7 +116,7 @@ fn main() {
                     return;
                 }
                 "--version" => {
-                    println!("resolvectl (systemd-rs)");
+                    println!("resolvectl (rust-systemd)");
                     return;
                 }
                 _ => (first, args[2..].to_vec()),

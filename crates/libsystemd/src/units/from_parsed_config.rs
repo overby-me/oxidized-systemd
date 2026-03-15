@@ -39,7 +39,7 @@ fn make_cgroup_path(_srvc_name: &str) -> Result<PathBuf, String> {
 }
 
 pub fn unit_from_parsed_service(conf: ParsedServiceConfig) -> Result<Unit, String> {
-    // TODO make the cgroup path dynamic so multiple systemd-rs instances can exist
+    // TODO make the cgroup path dynamic so multiple rust-systemd instances can exist
     let platform_specific = PlatformSpecificServiceFields {
         #[cfg(target_os = "linux")]
         cgroup_path: make_cgroup_path(&conf.common.name)?,

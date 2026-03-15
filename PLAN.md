@@ -12,6 +12,6 @@ This plan has been split into smaller documents for easier navigation. See [docs
 - **[Phase 3 — Network Stack](docs/plan/phase-3.md)** — networkd, resolved, timesyncd, etc.
 - **[Phase 4 — Extended Services](docs/plan/phase-4.md)** — machined, nspawn, portabled, homed, cryptsetup, etc.
 - **[Phase 5 — Utilities, Boot & Polish](docs/plan/phase-5.md)** — analyze, cgls, cgtop, generators, NixOS integration
-- **[Integration Testing](docs/plan/integration.md)** — nixos-rs boot testing with cloud-hypervisor
+- **[Integration Testing](docs/plan/integration.md)** — rust-nixos boot testing with cloud-hypervisor
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed recent changes.

@@ -1742,7 +1742,7 @@ fn main() -> ExitCode {
         ),
 
         Commands::Version => {
-            println!("udevadm (systemd-rs)");
+            println!("udevadm (rust-systemd)");
             0
         }
     };

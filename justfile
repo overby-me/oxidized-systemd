@@ -7,7 +7,7 @@ test:
 clippy:
     cargo clippy --workspace
 
-# Run differential tests comparing systemd-rs against real systemd
+# Run differential tests comparing rust-systemd against real systemd
 difftest *ARGS:
     cargo test --package difftest -- {{ARGS}}
 

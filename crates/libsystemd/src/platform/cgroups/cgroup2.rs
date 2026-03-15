@@ -6,7 +6,7 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
-/// move a process into the cgroup. In systemd-rs the child process will call `move_self` for convenience
+/// move a process into the cgroup. In rust-systemd the child process will call `move_self` for convenience
 pub fn move_pid_to_cgroup(
     cgroup_path: &std::path::Path,
     pid: nix::unistd::Pid,
@@ -25,7 +25,7 @@ pub fn move_pid_to_cgroup(
     Ok(())
 }
 
-/// move this process into the cgroup. Used by systemd-rs after forking
+/// move this process into the cgroup. Used by rust-systemd after forking
 pub fn move_self_to_cgroup(cgroup_path: &std::path::Path) -> Result<(), CgroupError> {
     let pid = nix::unistd::getpid();
     move_pid_to_cgroup(cgroup_path, pid)

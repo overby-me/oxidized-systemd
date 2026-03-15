@@ -627,7 +627,7 @@ Exit status:
 }
 
 fn print_version() {
-    println!("systemd-networkd-wait-online (systemd-rs)");
+    println!("systemd-networkd-wait-online (rust-systemd)");
 }
 
 // ── sd_notify ──────────────────────────────────────────────────────────────

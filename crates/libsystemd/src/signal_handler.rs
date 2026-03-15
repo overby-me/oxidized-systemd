@@ -127,7 +127,7 @@ pub fn handle_signals(
                                             }
                                             None => {
                                                 trace!(
-                                                    "All processes spawned by systemd-rs have a pid entry. \
+                                                    "All processes spawned by rust-systemd have a pid entry. \
                                                      This did not: {pid}. Probably a rerooted orphan."
                                                 );
                                                 None
@@ -156,7 +156,7 @@ pub fn handle_signals(
                 signal_hook::consts::SIGTERM
                 | signal_hook::consts::SIGINT
                 | signal_hook::consts::SIGQUIT => {
-                    info!("Received termination signal. systemd-rs checking out");
+                    info!("Received termination signal. rust-systemd checking out");
                     crate::shutdown::shutdown_sequence(
                         run_info.clone(),
                         crate::shutdown::ShutdownAction::Poweroff,
@@ -332,7 +332,7 @@ pub fn daemon_reexec(run_info: &ArcMutRuntimeInfo) {
     };
 
     // Serialize running-service state.
-    let state_path = std::path::Path::new("/run/systemd/systemd-rs-reexec-state");
+    let state_path = std::path::Path::new("/run/systemd/rust-systemd-reexec-state");
     match serialize_reexec_state(run_info, state_path) {
         Ok(()) => {
             info!("Serialized reexec state to {}", state_path.display());
@@ -421,7 +421,7 @@ pub fn check_and_restore_reexec_state(run_info: &ArcMutRuntimeInfo) -> bool {
     // SAFETY: only called during early single-threaded startup.
     unsafe { std::env::remove_var("SYSTEMD_RS_REEXEC") };
 
-    let state_path = std::path::Path::new("/run/systemd/systemd-rs-reexec-state");
+    let state_path = std::path::Path::new("/run/systemd/rust-systemd-reexec-state");
     if !state_path.exists() {
         info!("Reexec detected but no state file found — starting fresh");
         return true;
@@ -692,7 +692,7 @@ mod tests {
                 unit_dirs: vec![],
                 target_unit: "default.target".to_string(),
                 notification_sockets_dir: std::path::PathBuf::from("/tmp"),
-                self_path: std::path::PathBuf::from("/bin/systemd-rs"),
+                self_path: std::path::PathBuf::from("/bin/rust-systemd"),
             },
             stdout_eventfd: crate::platform::make_event_fd().unwrap(),
             stderr_eventfd: crate::platform::make_event_fd().unwrap(),
@@ -746,7 +746,7 @@ mod tests {
                 unit_dirs: vec![],
                 target_unit: "default.target".to_string(),
                 notification_sockets_dir: std::path::PathBuf::from("/tmp"),
-                self_path: std::path::PathBuf::from("/bin/systemd-rs"),
+                self_path: std::path::PathBuf::from("/bin/rust-systemd"),
             },
             stdout_eventfd: crate::platform::make_event_fd().unwrap(),
             stderr_eventfd: crate::platform::make_event_fd().unwrap(),
@@ -807,7 +807,7 @@ mod tests {
                 unit_dirs: vec![],
                 target_unit: "default.target".to_string(),
                 notification_sockets_dir: std::path::PathBuf::from("/tmp"),
-                self_path: std::path::PathBuf::from("/bin/systemd-rs"),
+                self_path: std::path::PathBuf::from("/bin/rust-systemd"),
             },
             stdout_eventfd: crate::platform::make_event_fd().unwrap(),
             stderr_eventfd: crate::platform::make_event_fd().unwrap(),

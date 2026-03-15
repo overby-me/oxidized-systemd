@@ -3373,7 +3373,7 @@ fn test_environment_single_line_multiple_vars() {
 fn test_service_no_service_section() {
     // systemd allows .service files without a [Service] section (e.g.
     // systemd-reboot.service which only has a [Unit] with SuccessAction=).
-    // systemd-rs should treat these as oneshot services with no ExecStart.
+    // rust-systemd should treat these as oneshot services with no ExecStart.
     let test_service_str = r#"
     [Unit]
     Description=System Reboot
@@ -33042,7 +33042,7 @@ fn test_protect_proc_in_socket_unit() {
 // X- vendor extension settings tests
 // ============================================================
 // systemd silently ignores settings prefixed with X- (vendor extensions).
-// systemd-rs should do the same — no "unsupported setting" warnings.
+// rust-systemd should do the same — no "unsupported setting" warnings.
 
 #[test]
 fn test_x_vendor_extension_in_service_section_no_warning() {

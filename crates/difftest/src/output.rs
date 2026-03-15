@@ -1,7 +1,7 @@
-//! Helpers for capturing output from systemd and systemd-rs commands.
+//! Helpers for capturing output from systemd and rust-systemd commands.
 //!
 //! This module provides convenience functions and types for running commands
-//! against both real systemd and systemd-rs, capturing their outputs into
+//! against both real systemd and rust-systemd, capturing their outputs into
 //! [`TestOutput`] variants suitable for differential comparison.
 //!
 //! # Command execution
@@ -260,11 +260,11 @@ pub fn systemd_command(tool: &str) -> CommandCapture {
     CommandCapture::new(tool)
 }
 
-/// Create a [`CommandCapture`] for a systemd-rs tool.
+/// Create a [`CommandCapture`] for a rust-systemd tool.
 ///
 /// Looks for the binary under the workspace `target/` directory first, then
 /// falls back to `PATH`. The binary name is expected to follow the
-/// `systemd-rs-<tool>` naming convention (or match the real tool name if
+/// `rust-systemd-<tool>` naming convention (or match the real tool name if
 /// installed alongside).
 pub fn systemd_rs_command(tool: &str) -> CommandCapture {
     // Attempt to locate the binary in the workspace target directory
@@ -325,8 +325,8 @@ pub fn capture_dbus_properties(unit: &str, properties: &[&str]) -> TestOutput {
     cmd.capture_properties()
 }
 
-/// Capture D-Bus properties for a unit from systemd-rs by running the
-/// systemd-rs `systemctl show <unit>`.
+/// Capture D-Bus properties for a unit from rust-systemd by running the
+/// rust-systemd `systemctl show <unit>`.
 pub fn capture_dbus_properties_rs(unit: &str, properties: &[&str]) -> TestOutput {
     let mut cmd = systemd_rs_command("systemctl").args(&["show", unit]);
     if !properties.is_empty() {
@@ -455,7 +455,7 @@ pub fn diff_property_maps(
         let right = systemd_rs.get(*key);
         if left != right {
             diffs.push(format!(
-                "  {key}: systemd={}, systemd-rs={}",
+                "  {key}: systemd={}, rust-systemd={}",
                 left.map(|s| s.as_str()).unwrap_or("<missing>"),
                 right.map(|s| s.as_str()).unwrap_or("<missing>"),
             ));
@@ -486,7 +486,7 @@ pub fn diff_file_trees(
         let right = systemd_rs.get(*key);
         match (left, right) {
             (Some(_), None) => diffs.push(format!("  only in systemd: {key}")),
-            (None, Some(_)) => diffs.push(format!("  only in systemd-rs: {key}")),
+            (None, Some(_)) => diffs.push(format!("  only in rust-systemd: {key}")),
             (Some(lh), Some(rh)) if lh != rh => {
                 diffs.push(format!("  content differs: {key}"));
             }
@@ -570,7 +570,7 @@ mod tests {
         let diff = diff_property_maps(&left, &right).unwrap();
         assert!(diff.contains("A"));
         assert!(diff.contains("systemd=1"));
-        assert!(diff.contains("systemd-rs=2"));
+        assert!(diff.contains("rust-systemd=2"));
     }
 
     #[test]
@@ -600,7 +600,7 @@ mod tests {
         right.insert("b.txt".into(), "hash_b".into());
         let diff = diff_file_trees(&left, &right).unwrap();
         assert!(diff.contains("only in systemd: a.txt"));
-        assert!(diff.contains("only in systemd-rs: b.txt"));
+        assert!(diff.contains("only in rust-systemd: b.txt"));
     }
 
     #[test]

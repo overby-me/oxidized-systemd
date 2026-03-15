@@ -1,10 +1,10 @@
-# systemd-rs
+# rust-systemd
 
 A pure Rust rewrite and drop-in replacement for [systemd](https://github.com/systemd/systemd).
 
 ## Overview
 
-`systemd-rs` is a fully compatible, binary-for-binary replacement for the entire systemd suite, written entirely in Rust.
+`rust-systemd` is a fully compatible, binary-for-binary replacement for the entire systemd suite, written entirely in Rust.
 The goal is to produce a set of binaries that can replace every systemd component on a Linux system
 with zero configuration changes — existing unit files, configuration, and tooling should work unmodified.
 
@@ -13,7 +13,7 @@ The implementation is modeled after [systemd](https://github.com/systemd/systemd
 following its architecture for the service manager, unit dependency graph, D-Bus APIs,
 journal binary log format, and all other public interfaces.
 This is a **full drop-in replacement**, not a reimagining — the same way
-[pkg-config-rs](https://tangled.org/@overby.me/overby.me/tree/main/pkg-config-rs) replaces pkg-config.
+[rust-pkg-config](https://tangled.org/@overby.me/overby.me/tree/main/rust/pkg-config) replaces pkg-config.
 
 ## Features
 
@@ -43,7 +43,7 @@ This is a **full drop-in replacement**, not a reimagining — the same way
 
 ## Current Status
 
-**🟢 NixOS boots successfully with systemd-rs as PID 1** — reaches `multi-user.target` with login prompt in ~8 seconds (cloud-hypervisor VM, full networking via networkd + resolved). **4,310 unit tests passing** across 64 crates.
+**🟢 NixOS boots successfully with rust-systemd as PID 1** — reaches `multi-user.target` with login prompt in ~8 seconds (cloud-hypervisor VM, full networking via networkd + resolved). **4,310 unit tests passing** across 64 crates.
 
 | Phase | Status | Highlights |
 |-------|--------|------------|
@@ -152,11 +152,11 @@ cargo test -p systemd-shutdown
 cargo test -p systemd-sleep
 ```
 
-### Boot Testing with nixos-rs
+### Boot Testing with rust-nixos
 
-The [nixos-rs](../nixos-rs) project provides end-to-end boot testing by building a minimal NixOS image with `systemd-rs` as PID 1 and booting it in a [cloud-hypervisor](https://github.com/cloud-hypervisor/cloud-hypervisor) VM. Serial console output is captured so you can see every unit start, every log line, and any panics or failures during the boot process.
+The [rust-nixos](../nixos) project provides end-to-end boot testing by building a minimal NixOS image with `rust-systemd` as PID 1 and booting it in a [cloud-hypervisor](https://github.com/cloud-hypervisor/cloud-hypervisor) VM. Serial console output is captured so you can see every unit start, every log line, and any panics or failures during the boot process.
 
-From the `nixos-rs/` directory:
+From the `rust-nixos/` directory:
 
 ```sh
 # Interactive boot (serial output on your terminal)
@@ -178,7 +178,7 @@ just test-quiet
 just test-keep
 ```
 
-See [PLAN.md — Integration Testing](PLAN.md#integration-testing-with-nixos-rs) for details on what the boot test validates and the development workflow.
+See [PLAN.md — Integration Testing](PLAN.md#integration-testing-with-rust-nixos) for details on what the boot test validates and the development workflow.
 
 ### Debugging Early Boot Failures
 
@@ -194,10 +194,10 @@ Environment=SYSTEMD_LOG_LEVEL=trace
 
 This produces detailed output at every exec-helper stage (mount namespace setup, privilege drop, credential loading, execv) on the serial console. You can also use `debug`, `info`, `warn`, or `error`.
 
-When booting via nixos-rs, watch the serial output:
+When booting via rust-nixos, watch the serial output:
 
 ```sh
-# From nixos-rs/
+# From rust-nixos/
 just run          # interactive — scroll through serial output
 just test-log /tmp/boot.log   # save full boot log for post-mortem
 ```
@@ -205,7 +205,7 @@ just test-log /tmp/boot.log   # save full boot log for post-mortem
 Then grep the log for the failing unit:
 
 ```sh
-grep 'systemd-rs\[systemd-timesyncd\]' /tmp/boot.log
+grep 'rust-systemd\[systemd-timesyncd\]' /tmp/boot.log
 ```
 
 **How the log level flows** (mirrors real systemd's `--log-level` to `sd-executor`):
@@ -239,7 +239,7 @@ After `ProtectKernelLogs=` hides `/dev/kmsg`, the logger silently degrades — w
 | Trace a single unit | `Environment=SYSTEMD_LOG_LEVEL=trace` in the unit |
 | Trace all units | Set `SYSTEMD_LOG_LEVEL=trace` in the manager's environment |
 | See only warnings | Default behavior (no config needed) |
-| Filter serial output | `grep 'systemd-rs\[<unit>\]' <logfile>` |
+| Filter serial output | `grep 'rust-systemd\[<unit>\]' <logfile>` |
 | Numeric syslog levels | `0`–`7` are accepted (`7` = debug, `4` = warn) |
 
 ## Contributing

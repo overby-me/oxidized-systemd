@@ -1854,7 +1854,7 @@ fn parse_args(argv: &[String]) -> Result<Args, String> {
         }
 
         if arg == "--version" {
-            println!("systemd-repart 256 (systemd-rs)");
+            println!("systemd-repart 256 (rust-systemd)");
             process::exit(0);
         }
 
