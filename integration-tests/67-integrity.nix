@@ -34,5 +34,5 @@
   #   - a diagnostic ERR trap must write to stderr: it also fires inside a
   #     $( ), where anything on stdout is captured into the caller's variable
   #     and corrupts the comparison being diagnosed.
-  extraPackages = pkgs: [ pkgs.cryptsetup ];
+  extraPackages = pkgs: [pkgs.cryptsetup];
 }

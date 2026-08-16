@@ -505,6 +505,7 @@ become the default is **not** more of the same validation:
 
 Until one of those is chosen, widening the variant set further is low-value: the
 drive is already demonstrably robust.
+
 ## Inc 4 default flip: the intermittent all-Waiting boot stall, root-caused and fixed (2026-08-08)
 
 Flipping `SYSTEMD_RS_JOB_GRAPH` on by default and validating base tests **under

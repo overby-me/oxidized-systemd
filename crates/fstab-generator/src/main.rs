@@ -726,7 +726,7 @@ fn emit_mount_unit(
         // The real root mount itself gates the whole initrd → switch-root
         // sequence: initrd-parse-etc.service Requires initrd-root-fs.target,
         // which must pull in sysroot.mount. Children (/sysroot/usr, /sysroot/
-        // nix/store, …) hang off initrd-fs.target instead.
+        // platform/nix/store, …) hang off initrd-fs.target instead.
         "initrd-root-fs.target"
     } else if in_initrd && is_sysroot_prefixed {
         "initrd-fs.target"

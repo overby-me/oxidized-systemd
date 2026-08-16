@@ -55,9 +55,9 @@ follow from where it strains.
    generation rollback. This exercises design principle 5 for the first time and
    opens a production feedback channel that VM tests cannot provide.
    *In-VM precursor DONE (2026-08-04), real-machine step remains:* the reusable
-   module `rust/nixos/rung1.nix` (`services.rustSystemdRung1.*`) runs individual
+   module `safety/oxidized/nixos/rung1.nix` (`services.rustSystemdRung1.*`) runs individual
    rust components under stock C PID 1 by overriding just that component's
-   service. Green in-VM checks (`rust/nixos/rung1-*-test.nix`): **tmpfiles** and
+   service. Green in-VM checks (`safety/oxidized/nixos/rung1-*-test.nix`): **tmpfiles** and
    **sysusers** (oneshots) and the **timesyncd**, **resolved**, and **networkd**
    daemons -- each active/applied under C PID 1 while PID 1 stays C 260. This
    surfaced and fixed three real rust bugs (tmpfiles `setfacl` and sysusers

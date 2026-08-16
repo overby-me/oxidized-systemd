@@ -10,7 +10,6 @@ base64 = "0.22"
 chrono = "0.4"
 fern = "0.7"
 libc = "0.2"
-vpick-core = { path = "../vpick-core" }
 log = "0.4"
 nix = { version = "0.31", features = [
   "event",
@@ -30,6 +29,7 @@ serde_json = "1.0"
 sha2 = "0.10"
 signal-hook = "0.4"
 threadpool = "1.8"
+vpick-core = { path = "../vpick-core" }
 
 clap = { version = "4.5", features = ["derive"] }
 lz4_flex = "0.11"
